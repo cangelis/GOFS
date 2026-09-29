@@ -1,0 +1,55 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "https://github.com/MobilityData/GOFS/blob/main/reference.md#creating-a-booking",
+  "description": "Body of the POST {bookings} request, which creates a booking from a quote.",
+  "type": "object",
+  "properties": {
+    "quote_id": {
+      "description": "ID of an unexpired quote returned by quotes, not yet booked.",
+      "type": "string"
+    },
+    "consumer_booking_id": {
+      "description": "Identifier of the booking in the consumer's system. Unique per consumer.",
+      "type": "string"
+    },
+    "rider": {
+      "description": "The rider. Every field in required_rider_fields of booking_information.json MUST be provided.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "Stable, opaque identifier of the rider in the consumer's system. MUST NOT carry personal data.",
+          "type": "string"
+        },
+        "first_name": {
+          "description": "First name of the rider.",
+          "type": "string"
+        },
+        "last_name": {
+          "description": "Last name of the rider.",
+          "type": "string"
+        },
+        "phone_number": {
+          "type": "string",
+          "pattern": "^\\+[1-9][0-9]{1,14}$",
+          "description": "Phone number the driver can call to reach the rider."
+        },
+        "email": {
+          "description": "Email address of the rider.",
+          "type": "string",
+          "format": "email"
+        }
+      },
+      "additionalProperties": false
+    },
+    "pickup_instructions": {
+      "description": "Instructions for the driver at pickup.",
+      "type": "string"
+    }
+  },
+  "required": [
+    "quote_id",
+    "consumer_booking_id",
+    "rider"
+  ],
+  "additionalProperties": false
+}
