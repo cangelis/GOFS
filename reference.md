@@ -1090,6 +1090,48 @@ The system MUST respond within 10 seconds with HTTP `201 Created` and the bookin
 
 Failures before a booking exists are returned as errors: `quote_not_found`, `quote_expired`, `quote_already_booked`, `invalid_request` and `idempotency_key_reused`. Once a booking exists, every failure is reported as a `rejected` or `cancelled` booking.
 
+##### Example:
+
+```jsonc
+// POST https://www.example.com/gofs/1/en/bookings
+// Idempotency-Key: 5b1e8f0a-3c2d-4e6f-9a7b-1c2d3e4f5a6b
+{
+  "quote_id": "q_01J8Z6K4M2",
+  "consumer_booking_id": "0192a7c4-5e1f-7b3a-9c2d-1f4e6a8b0c3d",
+  "rider": {
+    "id": "r_5f2c",
+    "first_name": "Alex",
+    "phone_number": "+12065550123"
+  },
+  "pickup_instructions": "Main entrance, north side"
+}
+```
+
+```jsonc
+// 201 Created
+{
+  "last_updated": 1790150412,
+  "ttl": 0,
+  "version": "1.0",
+  "data": {
+    "booking_id": "b_88213",
+    "consumer_booking_id": "0192a7c4-5e1f-7b3a-9c2d-1f4e6a8b0c3d",
+    "quote_id": "q_01J8Z6K4M2",
+    "status": "requested",
+    "sequence": 1,
+    "created_at": 1790150410,
+    "updated_at": 1790150410,
+    "brand_id": "wav",
+    "vehicle_type_id": "ramp_van",
+    "pickup": { "lat": 47.6062, "lon": -122.3321, "address": "401 5th Ave, Seattle, WA 98104" },
+    "drop_off": { "lat": 47.6205, "lon": -122.3493, "address": "400 Broad St, Seattle, WA 98109" },
+    "rider": { "id": "r_5f2c", "first_name": "Alex", "phone_number": "+12065550123" },
+    "price": { "is_fixed": false, "amount": 18.50, "min_amount": 16.00, "max_amount": 22.00, "currency": "USD" },
+    "status_times": { "requested": 1790150410 }
+  }
+}
+```
+
 #### Reading a booking
 
 `GET {bookings}/{booking_id}` returns the current booking. The system MUST serve it for at least 7 days after the booking reaches a final status, and SHOULD allow at least one request per booking every 15 seconds.
@@ -1147,6 +1189,22 @@ Field Name | Presence | Type | Description
 `vehicle_location` | Conditionally REQUIRED | Object | Position of the vehicle, with the fields of `vehicle_location` in the booking. REQUIRED from `driver_en_route` until `completed` once a position is known. FORBIDDEN otherwise.
 `estimated_pickup_at` | Conditionally REQUIRED | Timestamp | Estimated pickup time. REQUIRED until `picked_up`.
 
+##### Example:
+
+```jsonc
+// GET https://www.example.com/gofs/1/en/bookings/b_88213/vehicle_location
+{
+  "last_updated": 1790150760,
+  "ttl": 0,
+  "version": "1.0",
+  "data": {
+    "status": "driver_en_route",
+    "vehicle_location": { "lat": 47.6011, "lon": -122.3288, "heading": 15, "recorded_at": 1790150758 },
+    "estimated_pickup_at": 1790151090
+  }
+}
+```
+
 #### Cancelling a booking
 
 `POST {bookings}/{booking_id}/cancel` MUST carry an `Idempotency-Key` header. The request body has the following fields.
@@ -1155,6 +1213,17 @@ Field Name | Presence | Type | Description
 ---|---|---|---
 `cancelled_by` | REQUIRED | Enum | `rider` if the rider asked to cancel, `consumer` if the consumer decided to.
 `reason` | REQUIRED | Enum | One of the [cancellation reasons](#cancellation-reasons) usable by `rider` or `consumer`.
+
+##### Example:
+
+```jsonc
+// POST https://www.example.com/gofs/1/en/bookings/b_88213/cancel
+// Idempotency-Key: 9d3c7a1e-2b4f-4c8d-a6e5-7f1b2c3d4e5f
+{
+  "cancelled_by": "rider",
+  "reason": "rider_request"
+}
+```
 
 The response is the booking in status `cancelled`, including `cancellation.fee` if one applies. Cancelling an already cancelled booking returns it unchanged. Cancelling a booking in `picked_up` or in a final status returns an `invalid_transition` error.
 
@@ -1206,6 +1275,8 @@ sequenceDiagram
 ```
 
 A system MUST treat every consumer alike, and a consumer MUST treat every system alike, with the same timeouts and fields. Price, wait time, driver and vehicle information MUST be shown to riders as the system provided them.
+
+The `quotes` and `bookings` endpoints are listed per language in `gofs.json`, like every other feed. Text a system returns through them, such as `message`, uses the language they are listed under.
 
 All requests MUST use HTTPS. Authentication of requests and events is not defined in this version.
 
@@ -1360,7 +1431,6 @@ Code | HTTP status | Description
 `invalid_transition` | 409 | The request is not allowed in the current status of the booking.
 `quote_expired` | 410 | The quote was booked after `expires_at`.
 `idempotency_key_reused` | 422 | The `Idempotency-Key` was used with a different body.
-`unsupported_version` | 422 | The request targets a `booking_version` the system does not serve.
 `rate_limited` | 429 | Too many requests. A `Retry-After` header SHOULD be provided.
 `internal_error` | 500 | Unexpected failure. The request can be retried with the same `Idempotency-Key`.
 `unavailable` | 503 | The system is temporarily unavailable. A `Retry-After` header SHOULD be provided.
