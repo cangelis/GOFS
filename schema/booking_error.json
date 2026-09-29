@@ -1,0 +1,72 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "https://github.com/MobilityData/GOFS/blob/main/reference.md#errors",
+  "description": "RFC 9457 problem document returned by a failed quotes or bookings request.",
+  "type": "object",
+  "properties": {
+    "type": {
+      "description": "URI identifying the problem type.",
+      "type": "string",
+      "format": "uri-reference"
+    },
+    "title": {
+      "description": "Short, human-readable summary of the problem type.",
+      "type": "string"
+    },
+    "status": {
+      "description": "HTTP status code.",
+      "type": "integer",
+      "minimum": 400,
+      "maximum": 599
+    },
+    "code": {
+      "description": "Stable error code. Systems MAY return codes not listed in the reference.",
+      "type": "string",
+      "examples": [
+        "invalid_request",
+        "booking_not_found",
+        "quote_not_found",
+        "quote_already_booked",
+        "invalid_transition",
+        "quote_expired",
+        "idempotency_key_reused",
+        "rate_limited",
+        "internal_error",
+        "unavailable"
+      ]
+    },
+    "detail": {
+      "description": "Human-readable explanation specific to this occurrence.",
+      "type": "string"
+    },
+    "instance": {
+      "description": "URI identifying this occurrence.",
+      "type": "string",
+      "format": "uri-reference"
+    },
+    "errors": {
+      "description": "Invalid fields of an invalid_request.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "field": {
+            "description": "Path of the invalid field.",
+            "type": "string"
+          },
+          "reason": {
+            "description": "Why the field is invalid.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "field",
+          "reason"
+        ]
+      }
+    }
+  },
+  "required": [
+    "code"
+  ]
+}

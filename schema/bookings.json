@@ -1,0 +1,547 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "https://github.com/MobilityData/GOFS/blob/main/reference.md#reading-a-booking",
+  "description": "Response of POST {bookings} and GET {bookings}/{booking_id}: the booking.",
+  "type": "object",
+  "properties": {
+    "last_updated": {
+      "description": "Last time the data in the feed was updated in POSIX time.",
+      "type": "integer",
+      "minimum": 1450155600
+    },
+    "ttl": {
+      "description": "Always 0 for booking responses.",
+      "type": "integer",
+      "enum": [
+        0
+      ]
+    },
+    "version": {
+      "description": "GOFS version number to which the feed conforms, according to the versioning framework (added in v1.1).",
+      "type": "string",
+      "enum": [
+        "1.0"
+      ]
+    },
+    "data": {
+      "description": "A booking made from a quote.",
+      "type": "object",
+      "properties": {
+        "booking_id": {
+          "description": "Unique identifier of the booking in the system.",
+          "type": "string"
+        },
+        "consumer_booking_id": {
+          "description": "consumer_booking_id from the create request.",
+          "type": "string"
+        },
+        "quote_id": {
+          "description": "ID of the booked quote.",
+          "type": "string"
+        },
+        "status": {
+          "description": "Status of the booking.",
+          "type": "string",
+          "enum": [
+            "requested",
+            "confirmed",
+            "driver_en_route",
+            "driver_arrived",
+            "picked_up",
+            "completed",
+            "rejected",
+            "cancelled",
+            "no_show"
+          ]
+        },
+        "sequence": {
+          "description": "Increases by at least 1 on every change to the booking, except changes to vehicle_location.",
+          "type": "integer",
+          "minimum": 0
+        },
+        "created_at": {
+          "description": "When the booking was created.",
+          "type": "integer",
+          "minimum": 1450155600
+        },
+        "updated_at": {
+          "description": "When the change that set sequence happened.",
+          "type": "integer",
+          "minimum": 1450155600
+        },
+        "brand_id": {
+          "description": "ID from a service brand defined in service_brands.json.",
+          "type": "string"
+        },
+        "vehicle_type_id": {
+          "description": "ID from a vehicle type defined in vehicle_types.json.",
+          "type": "string"
+        },
+        "pickup": {
+          "type": "object",
+          "properties": {
+            "lat": {
+              "description": "Latitude.",
+              "type": "number",
+              "minimum": -90,
+              "maximum": 90
+            },
+            "lon": {
+              "description": "Longitude.",
+              "type": "number",
+              "minimum": -180,
+              "maximum": 180
+            },
+            "address": {
+              "description": "Full address, so it does not get lost during reverse geocoding.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "lat",
+            "lon"
+          ],
+          "additionalProperties": false,
+          "description": "Pickup location."
+        },
+        "drop_off": {
+          "type": "object",
+          "properties": {
+            "lat": {
+              "description": "Latitude.",
+              "type": "number",
+              "minimum": -90,
+              "maximum": 90
+            },
+            "lon": {
+              "description": "Longitude.",
+              "type": "number",
+              "minimum": -180,
+              "maximum": 180
+            },
+            "address": {
+              "description": "Full address, so it does not get lost during reverse geocoding.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "lat",
+            "lon"
+          ],
+          "additionalProperties": false,
+          "description": "Drop off location."
+        },
+        "rider": {
+          "description": "The rider.",
+          "type": "object",
+          "properties": {
+            "id": {
+              "description": "Stable, opaque identifier of the rider in the consumer's system. MUST NOT carry personal data.",
+              "type": "string"
+            },
+            "first_name": {
+              "description": "First name of the rider.",
+              "type": "string"
+            },
+            "last_name": {
+              "description": "Last name of the rider.",
+              "type": "string"
+            },
+            "phone_number": {
+              "type": "string",
+              "pattern": "^\\+[1-9][0-9]{1,14}$",
+              "description": "Phone number the driver can call to reach the rider."
+            },
+            "email": {
+              "description": "Email address of the rider.",
+              "type": "string",
+              "format": "email"
+            }
+          },
+          "additionalProperties": false
+        },
+        "estimated_pickup_at": {
+          "description": "Estimated pickup time. REQUIRED from confirmed until picked_up.",
+          "type": "integer",
+          "minimum": 1450155600
+        },
+        "estimated_drop_off_at": {
+          "description": "Estimated drop off time.",
+          "type": "integer",
+          "minimum": 1450155600
+        },
+        "driver": {
+          "description": "Driver serving the booking. REQUIRED in driver_en_route, driver_arrived and picked_up.",
+          "type": "object",
+          "properties": {
+            "first_name": {
+              "description": "First name of the driver.",
+              "type": "string"
+            },
+            "phone_number": {
+              "type": "string",
+              "pattern": "^\\+[1-9][0-9]{1,14}$",
+              "description": "The driver's own phone number. REQUIRED if driver_contact is direct."
+            },
+            "photo_url": {
+              "description": "Photo of the driver.",
+              "type": "string",
+              "format": "uri"
+            }
+          },
+          "required": [
+            "first_name"
+          ],
+          "additionalProperties": false
+        },
+        "vehicle": {
+          "description": "Vehicle serving the booking. REQUIRED in driver_en_route, driver_arrived and picked_up.",
+          "type": "object",
+          "properties": {
+            "license_plate": {
+              "description": "License plate of the vehicle.",
+              "type": "string"
+            },
+            "make": {
+              "description": "Make of the vehicle.",
+              "type": "string"
+            },
+            "model": {
+              "description": "Model of the vehicle.",
+              "type": "string"
+            },
+            "color": {
+              "description": "Color of the vehicle.",
+              "type": "string"
+            },
+            "wheelchair_boarding": {
+              "description": "Wheelchair boarding of the vehicle actually dispatched.",
+              "type": "string",
+              "enum": [
+                "boarding_accessible",
+                "boarding_inaccessible",
+                "boarding_accessible_with_assistance"
+              ]
+            },
+            "boarding_device": {
+              "description": "Boarding device of the vehicle.",
+              "type": "string",
+              "enum": [
+                "ramp",
+                "lift",
+                "none"
+              ]
+            }
+          },
+          "required": [
+            "license_plate",
+            "wheelchair_boarding"
+          ],
+          "additionalProperties": false
+        },
+        "vehicle_location": {
+          "description": "Latest known position of the vehicle. Only from driver_en_route until completed.",
+          "type": "object",
+          "properties": {
+            "lat": {
+              "description": "Latitude of the vehicle.",
+              "type": "number",
+              "minimum": -90,
+              "maximum": 90
+            },
+            "lon": {
+              "description": "Longitude of the vehicle.",
+              "type": "number",
+              "minimum": -180,
+              "maximum": 180
+            },
+            "heading": {
+              "description": "Heading in degrees, from 0 (north) to 359.",
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 359
+            },
+            "recorded_at": {
+              "description": "Time of the position fix, not of sending.",
+              "type": "integer",
+              "minimum": 1450155600
+            }
+          },
+          "required": [
+            "lat",
+            "lon",
+            "recorded_at"
+          ],
+          "additionalProperties": false
+        },
+        "price": {
+          "description": "Price the rider pays the operator.",
+          "type": "object",
+          "properties": {
+            "is_fixed": {
+              "description": "true if amount is the price the rider pays; false if it is an estimate.",
+              "type": "boolean"
+            },
+            "amount": {
+              "description": "The fixed price, or the most likely estimated price.",
+              "type": "number",
+              "minimum": 0
+            },
+            "min_amount": {
+              "description": "Lowest estimated price. FORBIDDEN if is_fixed is true.",
+              "type": "number",
+              "minimum": 0
+            },
+            "max_amount": {
+              "description": "Highest estimated price. FORBIDDEN if is_fixed is true.",
+              "type": "number",
+              "minimum": 0
+            },
+            "currency": {
+              "description": "ISO 4217 currency code of the amounts.",
+              "type": "string",
+              "pattern": "^[A-Z]{3}$"
+            }
+          },
+          "required": [
+            "is_fixed",
+            "amount",
+            "currency"
+          ],
+          "additionalProperties": false,
+          "if": {
+            "properties": {
+              "is_fixed": {
+                "const": true
+              }
+            }
+          },
+          "then": {
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "min_amount"
+                  ]
+                },
+                {
+                  "required": [
+                    "max_amount"
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        "cancellation": {
+          "description": "Why the booking ended without a ride. REQUIRED in rejected, cancelled and no_show. FORBIDDEN otherwise.",
+          "type": "object",
+          "properties": {
+            "cancelled_by": {
+              "description": "Who initiated the cancellation.",
+              "type": "string",
+              "enum": [
+                "rider",
+                "consumer",
+                "provider",
+                "driver"
+              ]
+            },
+            "reason": {
+              "description": "Cancellation reason.",
+              "type": "string",
+              "enum": [
+                "rider_request",
+                "rider_found_alternative",
+                "provider_timeout",
+                "consumer_error",
+                "no_vehicle_available",
+                "accessibility_unmet",
+                "driver_no_show",
+                "rider_no_show",
+                "vehicle_issue",
+                "trip_interrupted",
+                "service_disruption",
+                "other"
+              ]
+            },
+            "fee": {
+              "description": "Fee the operator charges the rider, in the currency of price.",
+              "type": "number",
+              "minimum": 0
+            },
+            "message": {
+              "description": "Explanation of the cancellation. REQUIRED if reason is other.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "cancelled_by",
+            "reason"
+          ],
+          "additionalProperties": false,
+          "if": {
+            "properties": {
+              "reason": {
+                "const": "other"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "message"
+            ]
+          }
+        },
+        "status_times": {
+          "description": "Timestamps keyed by each status the booking has entered.",
+          "type": "object",
+          "propertyNames": {
+            "enum": [
+              "requested",
+              "confirmed",
+              "driver_en_route",
+              "driver_arrived",
+              "picked_up",
+              "completed",
+              "rejected",
+              "cancelled",
+              "no_show"
+            ]
+          },
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 1450155600
+          },
+          "minProperties": 1
+        },
+        "message": {
+          "description": "Current message to the rider about the booking.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "booking_id",
+        "consumer_booking_id",
+        "quote_id",
+        "status",
+        "sequence",
+        "created_at",
+        "updated_at",
+        "brand_id",
+        "vehicle_type_id",
+        "pickup",
+        "drop_off",
+        "rider",
+        "price",
+        "status_times"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "enum": [
+                  "driver_en_route",
+                  "driver_arrived",
+                  "picked_up"
+                ]
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "required": [
+              "driver",
+              "vehicle"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "enum": [
+                  "confirmed",
+                  "driver_en_route",
+                  "driver_arrived"
+                ]
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "required": [
+              "estimated_pickup_at"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "enum": [
+                  "rejected",
+                  "cancelled",
+                  "no_show"
+                ]
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "required": [
+              "cancellation"
+            ]
+          },
+          "else": {
+            "not": {
+              "required": [
+                "cancellation"
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "not": {
+              "properties": {
+                "status": {
+                  "enum": [
+                    "driver_en_route",
+                    "driver_arrived",
+                    "picked_up"
+                  ]
+                }
+              },
+              "required": [
+                "status"
+              ]
+            }
+          },
+          "then": {
+            "not": {
+              "required": [
+                "vehicle_location"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "last_updated",
+    "ttl",
+    "version",
+    "data"
+  ]
+}

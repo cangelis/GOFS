@@ -1,0 +1,138 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "https://github.com/MobilityData/GOFS/blob/main/reference.md#quotes-request",
+  "description": "Body of the POST request to the quotes endpoint. It MUST NOT contain any data identifying the rider.",
+  "type": "object",
+  "properties": {
+    "pickup": {
+      "type": "object",
+      "properties": {
+        "lat": {
+          "description": "Latitude.",
+          "type": "number",
+          "minimum": -90,
+          "maximum": 90
+        },
+        "lon": {
+          "description": "Longitude.",
+          "type": "number",
+          "minimum": -180,
+          "maximum": 180
+        },
+        "address": {
+          "description": "Full address, so it does not get lost during reverse geocoding.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "lat",
+        "lon"
+      ],
+      "additionalProperties": false,
+      "description": "Location where the rider will be picked up."
+    },
+    "drop_off": {
+      "type": "object",
+      "properties": {
+        "lat": {
+          "description": "Latitude.",
+          "type": "number",
+          "minimum": -90,
+          "maximum": 90
+        },
+        "lon": {
+          "description": "Longitude.",
+          "type": "number",
+          "minimum": -180,
+          "maximum": 180
+        },
+        "address": {
+          "description": "Full address, so it does not get lost during reverse geocoding.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "lat",
+        "lon"
+      ],
+      "additionalProperties": false,
+      "description": "Location where the rider will be dropped off."
+    },
+    "brand_ids": {
+      "description": "Service brand IDs from service_brands.json to limit the quotes to.",
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "riders": {
+      "description": "Number of riders travelling, including the requester and any personal care attendant.",
+      "type": "integer",
+      "minimum": 1,
+      "default": 1
+    },
+    "accessibility": {
+      "description": "Accessibility needs of the rider.",
+      "type": "object",
+      "properties": {
+        "mobility_aid": {
+          "description": "Mobility aid used by the rider, from the TOMP-API mobilityNeed vocabulary.",
+          "type": "string",
+          "enum": [
+            "wheelchair",
+            "assisted_wheelchair",
+            "motorized_wheelchair",
+            "mobility_scooter",
+            "walking_frame",
+            "restricted_mobility",
+            "other"
+          ]
+        },
+        "stays_in_mobility_aid": {
+          "description": "true if the rider cannot transfer to a seat and travels seated in the mobility aid.",
+          "type": "boolean"
+        },
+        "mobility_aid_weight": {
+          "description": "Weight of the mobility aid including its occupant, in kilograms.",
+          "type": "integer",
+          "minimum": 0
+        },
+        "mobility_aid_width": {
+          "description": "Width of the mobility aid, in centimetres.",
+          "type": "integer",
+          "minimum": 0
+        },
+        "mobility_aid_length": {
+          "description": "Length of the mobility aid, in centimetres.",
+          "type": "integer",
+          "minimum": 0
+        },
+        "service_animal": {
+          "description": "true if a service animal travels with the rider.",
+          "type": "boolean"
+        },
+        "personal_care_attendants": {
+          "description": "Number of personal care attendants travelling with the rider, counted in riders.",
+          "type": "integer",
+          "minimum": 0
+        },
+        "boarding_assistance": {
+          "description": "true if the rider needs the driver's help to board.",
+          "type": "boolean"
+        },
+        "notes": {
+          "description": "Free text describing needs the other fields do not cover.",
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "pickup",
+    "drop_off"
+  ],
+  "additionalProperties": false
+}

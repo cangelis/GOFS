@@ -1,0 +1,182 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "https://github.com/MobilityData/GOFS/blob/main/reference.md#quotes",
+  "description": "Response of the quotes endpoint: priced, time-limited quotes for one trip.",
+  "type": "object",
+  "properties": {
+    "last_updated": {
+      "description": "Last time the data in the feed was updated in POSIX time.",
+      "type": "integer",
+      "minimum": 1450155600
+    },
+    "ttl": {
+      "description": "Always 0 for quotes.",
+      "type": "integer",
+      "enum": [
+        0
+      ]
+    },
+    "version": {
+      "description": "GOFS version number to which the feed conforms, according to the versioning framework (added in v1.1).",
+      "type": "string",
+      "enum": [
+        "1.0"
+      ]
+    },
+    "data": {
+      "type": "object",
+      "properties": {
+        "quotes": {
+          "description": "One object per quote. Empty if the trip cannot be served.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "quote_id": {
+                "description": "Unique identifier of the quote among the quotes of the system.",
+                "type": "string"
+              },
+              "brand_id": {
+                "description": "ID from a service brand defined in service_brands.json.",
+                "type": "string"
+              },
+              "vehicle_type_id": {
+                "description": "ID from a vehicle type defined in vehicle_types.json.",
+                "type": "string"
+              },
+              "expires_at": {
+                "description": "Last moment the quote can be booked, in POSIX time.",
+                "type": "integer",
+                "minimum": 1450155600
+              },
+              "wait_time": {
+                "description": "Estimated number of seconds until pickup.",
+                "type": "integer",
+                "minimum": 0
+              },
+              "travel_time": {
+                "description": "Estimated number of seconds from pickup to drop off.",
+                "type": "integer",
+                "minimum": 0
+              },
+              "travel_distance": {
+                "description": "Estimated number of metres from pickup to drop off.",
+                "type": "integer",
+                "minimum": 0
+              },
+              "price": {
+                "description": "Price the rider will pay the operator.",
+                "type": "object",
+                "properties": {
+                  "is_fixed": {
+                    "description": "true if amount is the price the rider pays; false if it is an estimate.",
+                    "type": "boolean"
+                  },
+                  "amount": {
+                    "description": "The fixed price, or the most likely estimated price.",
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "min_amount": {
+                    "description": "Lowest estimated price. FORBIDDEN if is_fixed is true.",
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "max_amount": {
+                    "description": "Highest estimated price. FORBIDDEN if is_fixed is true.",
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "currency": {
+                    "description": "ISO 4217 currency code of the amounts.",
+                    "type": "string",
+                    "pattern": "^[A-Z]{3}$"
+                  }
+                },
+                "required": [
+                  "is_fixed",
+                  "amount",
+                  "currency"
+                ],
+                "additionalProperties": false,
+                "if": {
+                  "properties": {
+                    "is_fixed": {
+                      "const": true
+                    }
+                  }
+                },
+                "then": {
+                  "not": {
+                    "anyOf": [
+                      {
+                        "required": [
+                          "min_amount"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "max_amount"
+                        ]
+                      }
+                    ]
+                  }
+                }
+              },
+              "cancellation_policy": {
+                "description": "Cancellation terms that will apply to a booking made from this quote.",
+                "type": "object",
+                "properties": {
+                  "free_cancellation_period": {
+                    "description": "Number of seconds after the booking is confirmed during which the rider can cancel without a fee.",
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "fee": {
+                    "description": "Fee charged when the rider cancels after free_cancellation_period, in the currency of price.",
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "no_show_fee": {
+                    "description": "Fee charged when the rider does not show up.",
+                    "type": "number",
+                    "minimum": 0
+                  }
+                },
+                "required": [
+                  "free_cancellation_period"
+                ],
+                "additionalProperties": false
+              },
+              "message": {
+                "description": "Short message to riders about the quote.",
+                "type": "string"
+              }
+            },
+            "required": [
+              "quote_id",
+              "brand_id",
+              "vehicle_type_id",
+              "expires_at",
+              "wait_time",
+              "price",
+              "cancellation_policy"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "quotes"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "last_updated",
+    "ttl",
+    "version",
+    "data"
+  ]
+}

@@ -49,7 +49,10 @@
                       "wait_times",
                       "wait_time",
                       "booking_rules",
-                      "realtime_booking"
+                      "realtime_booking",
+                      "booking_information",
+                      "quotes",
+                      "bookings"
                     ]
                   },
                   "url": {

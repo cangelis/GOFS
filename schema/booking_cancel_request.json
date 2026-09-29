@@ -1,0 +1,74 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "https://github.com/MobilityData/GOFS/blob/main/reference.md#cancelling-a-booking",
+  "description": "Body of the POST {bookings}/{booking_id}/cancel request.",
+  "type": "object",
+  "properties": {
+    "cancelled_by": {
+      "description": "rider if the rider asked to cancel, consumer if the consumer decided to.",
+      "type": "string",
+      "enum": [
+        "rider",
+        "consumer"
+      ]
+    },
+    "reason": {
+      "description": "Cancellation reason usable by cancelled_by.",
+      "type": "string",
+      "enum": [
+        "rider_request",
+        "rider_found_alternative",
+        "provider_timeout",
+        "consumer_error",
+        "other"
+      ]
+    }
+  },
+  "required": [
+    "cancelled_by",
+    "reason"
+  ],
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "cancelled_by": {
+            "const": "rider"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "reason": {
+            "enum": [
+              "rider_request",
+              "rider_found_alternative",
+              "other"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "cancelled_by": {
+            "const": "consumer"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "reason": {
+            "enum": [
+              "provider_timeout",
+              "consumer_error",
+              "other"
+            ]
+          }
+        }
+      }
+    }
+  ]
+}
