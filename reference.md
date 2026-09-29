@@ -31,8 +31,6 @@ This document defines the format and structure of the files that comprise a GOFS
    - [quotes](#quotes)
    - [bookings](#bookings)
 5. [Booking](#booking)
-   - [Quotes](#quotes)
-   - [Bookings](#bookings)
    - [Booking Statuses](#booking-statuses)
    - [Booking Events](#booking-events)
    - [Idempotency](#idempotency)
