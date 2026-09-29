@@ -1,0 +1,115 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "https://github.com/MobilityData/GOFS/blob/main/reference.md#booking_informationjson",
+  "description": "Declares how the on-demand service system can be booked through the quotes and bookings endpoints.",
+  "type": "object",
+  "properties": {
+    "last_updated": {
+      "description": "Last time the data in the feed was updated in POSIX time.",
+      "type": "integer",
+      "minimum": 1450155600
+    },
+    "ttl": {
+      "description": "Number of seconds before the data in the feed will be updated again (0 if the data should always be refreshed).",
+      "type": "integer",
+      "minimum": 0
+    },
+    "version": {
+      "description": "GOFS version number to which the feed conforms, according to the versioning framework (added in v1.1).",
+      "type": "string",
+      "enum": [
+        "1.0"
+      ]
+    },
+    "data": {
+      "type": "object",
+      "properties": {
+        "booking_version": {
+          "description": "Version of the booking endpoints implemented by the system, in MAJOR.MINOR format.",
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+$"
+        },
+        "booking_types": {
+          "description": "Booking types that can be made through the bookings endpoint, using the booking_type values of booking_rules.json.",
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "enum": [
+              0
+            ]
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "quote_validity": {
+          "description": "Minimum number of seconds every quote remains bookable after it is returned.",
+          "type": "integer",
+          "minimum": 120
+        },
+        "required_rider_fields": {
+          "description": "Rider fields the system needs to create a booking.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "first_name",
+              "last_name",
+              "phone_number",
+              "email"
+            ]
+          },
+          "uniqueItems": true
+        },
+        "vehicle_location": {
+          "description": "true if the system sends location_changed events and serves bookings/{booking_id}/vehicle_location.",
+          "type": "boolean"
+        },
+        "driver_contact": {
+          "description": "How the rider can reach the driver.",
+          "type": "string",
+          "enum": [
+            "direct",
+            "none"
+          ]
+        },
+        "accepted_payment_methods": {
+          "description": "Payment methods the rider can use to pay the operator, for display to riders.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "cash",
+              "card_in_vehicle",
+              "provider_app",
+              "provider_account",
+              "voucher",
+              "other"
+            ]
+          },
+          "uniqueItems": true
+        },
+        "support_phone_number": {
+          "description": "Phone number for problems with an active booking.",
+          "type": "string",
+          "pattern": "^\\+[1-9][0-9]{1,14}$"
+        }
+      },
+      "required": [
+        "booking_version",
+        "booking_types",
+        "quote_validity",
+        "required_rider_fields",
+        "vehicle_location",
+        "driver_contact"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "last_updated",
+    "ttl",
+    "version",
+    "data"
+  ]
+}
