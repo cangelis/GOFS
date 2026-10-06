@@ -70,6 +70,7 @@ Presence conditions applicable to fields and files:
     * MUST NOT contain spaces
     * MUST be persistent for a given entity (zone, plan, etc).
 - **Language** - An IETF BCP 47 language code. For an introduction to IETF BCP 47, refer to [http://www.rfc-editor.org/rfc/bcp/bcp47.txt](http://www.rfc-editor.org/rfc/bcp/bcp47.txt) and [http://www.w3.org/International/articles/language-tags/](http://www.w3.org/International/articles/language-tags/). <br> *Example: `en` for English, `en-US` for American English or `de` for German.*
+- **Non-negative currency amount** - A non-negative decimal number in the major unit of the currency, with no more decimal places than the currency's ISO 4217 minor unit. <br> *Example: `18.50` for USD 18.50, `1850` for JPY 1850.*
 - **Non-negative Integer** - An integer greater than or equal to 0.
 - **Float** - A floating point number.
 - **Object** - A JSON element consisting of key-value pairs (fields).

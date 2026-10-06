@@ -283,17 +283,17 @@
               "type": "boolean"
             },
             "amount": {
-              "description": "The fixed price, or the most likely estimated price.",
+              "description": "The fixed price, or the most likely estimated price. In the major unit of the currency.",
               "type": "number",
               "minimum": 0
             },
             "min_amount": {
-              "description": "Lowest estimated price. FORBIDDEN if is_fixed is true.",
+              "description": "Lowest estimated price. FORBIDDEN if is_fixed is true. In the major unit of the currency.",
               "type": "number",
               "minimum": 0
             },
             "max_amount": {
-              "description": "Highest estimated price. FORBIDDEN if is_fixed is true.",
+              "description": "Highest estimated price. FORBIDDEN if is_fixed is true. In the major unit of the currency.",
               "type": "number",
               "minimum": 0
             },
@@ -366,7 +366,7 @@
               ]
             },
             "fee": {
-              "description": "Fee the operator charges the rider, in the currency of price.",
+              "description": "Fee the operator charges the rider, in the currency of price. In the major unit of the currency.",
               "type": "number",
               "minimum": 0
             },
