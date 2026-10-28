@@ -37,6 +37,35 @@
               },
               "wheelchair_boarding": {
                 "type": "string"
+              },
+              "boarding_device": {
+                "description": "Device used by riders in a mobility aid to board the vehicle.",
+                "type": "string",
+                "enum": [
+                  "ramp",
+                  "lift",
+                  "none"
+                ]
+              },
+              "mobility_aid_positions": {
+                "description": "Number of securement positions for a wheelchair or mobility scooter.",
+                "type": "integer",
+                "minimum": 0
+              },
+              "max_mobility_aid_weight": {
+                "description": "Heaviest mobility aid, including its occupant, that the boarding device can carry, in kilograms.",
+                "type": "integer",
+                "minimum": 0
+              },
+              "max_mobility_aid_width": {
+                "description": "Widest mobility aid that fits through the door and in the securement area, in centimetres.",
+                "type": "integer",
+                "minimum": 0
+              },
+              "max_mobility_aid_length": {
+                "description": "Longest mobility aid that fits in the securement area, in centimetres.",
+                "type": "integer",
+                "minimum": 0
               }
             },
             "required": [

@@ -12,6 +12,8 @@ GOFS currently supports on-demand services:
 - available to anyone 
 - that can be ordered in real time.
 
+Systems can also let consumers quote, book and follow real-time rides through the `quotes` and `bookings` endpoints, described under [Booking](reference.md#booking).
+
 Examples of supported services include: ridehail (like taxis or Uber), on-demand microtransit (like [Metro Micro](https://micro.metro.net) or [KnowRoute](https://knowroute.jp/)) and paratransit. 
 
 Unsupported services include fixed or flexible public transit services where a schedule is defined (GTFS and GTFS-Flex support those use cases).
