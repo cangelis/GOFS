@@ -1,0 +1,147 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "https://github.com/MobilityData/GOFS/blob/main/reference.md#reading-the-vehicle-location",
+  "description": "Response of GET {bookings}/{booking_id}/vehicle_location.",
+  "type": "object",
+  "properties": {
+    "last_updated": {
+      "description": "Last time the data in the feed was updated in POSIX time.",
+      "type": "integer",
+      "minimum": 1450155600
+    },
+    "ttl": {
+      "description": "Always 0 for booking responses.",
+      "type": "integer",
+      "enum": [
+        0
+      ]
+    },
+    "version": {
+      "description": "GOFS version number to which the feed conforms, according to the versioning framework (added in v1.1).",
+      "type": "string",
+      "enum": [
+        "1.0"
+      ]
+    },
+    "data": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "description": "Status of the booking.",
+          "type": "string",
+          "enum": [
+            "requested",
+            "confirmed",
+            "driver_en_route",
+            "driver_arrived",
+            "picked_up",
+            "completed",
+            "rejected",
+            "cancelled",
+            "no_show"
+          ]
+        },
+        "vehicle_location": {
+          "description": "Position of the vehicle.",
+          "type": "object",
+          "properties": {
+            "lat": {
+              "description": "Latitude of the vehicle.",
+              "type": "number",
+              "minimum": -90,
+              "maximum": 90
+            },
+            "lon": {
+              "description": "Longitude of the vehicle.",
+              "type": "number",
+              "minimum": -180,
+              "maximum": 180
+            },
+            "heading": {
+              "description": "Heading in degrees, from 0 (north) to 359.",
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 359
+            },
+            "recorded_at": {
+              "description": "Time of the position fix, not of sending.",
+              "type": "integer",
+              "minimum": 1450155600
+            }
+          },
+          "required": [
+            "lat",
+            "lon",
+            "recorded_at"
+          ],
+          "additionalProperties": false
+        },
+        "estimated_pickup_at": {
+          "description": "Estimated pickup time. REQUIRED until picked_up.",
+          "type": "integer",
+          "minimum": 1450155600
+        }
+      },
+      "required": [
+        "status"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "not": {
+              "properties": {
+                "status": {
+                  "enum": [
+                    "driver_en_route",
+                    "driver_arrived",
+                    "picked_up"
+                  ]
+                }
+              },
+              "required": [
+                "status"
+              ]
+            }
+          },
+          "then": {
+            "not": {
+              "required": [
+                "vehicle_location"
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "enum": [
+                  "requested",
+                  "confirmed",
+                  "driver_en_route",
+                  "driver_arrived"
+                ]
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "required": [
+              "estimated_pickup_at"
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "last_updated",
+    "ttl",
+    "version",
+    "data"
+  ]
+}
